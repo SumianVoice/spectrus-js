@@ -63,7 +63,10 @@ class _spectrogram2d extends _fftSpectrogramDisplay{
   }
   fillScreen() {
     if (this.enable) {
-      this.ctx.fillStyle = "#440154";
+      this.ctx.fillStyle = (`rgb(
+            ${colormap[curColormap][0][0]*255},
+            ${colormap[curColormap][0][1]*255},
+            ${colormap[curColormap][0][2]*255})`);
     }
     else {
       this.ctx.fillStyle = "#222222";

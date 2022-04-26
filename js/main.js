@@ -37,6 +37,7 @@ function setCanvasSize() {
   }
 }
 
+let curColormap = "viridis";
 let fft;
 let fftCtx;
 let fftDraw;
