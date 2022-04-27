@@ -136,7 +136,7 @@ class _spectrogram2d extends _fftSpectrogramDisplay{
   scaleRender() {
     if (!this.enable) {return}
     this.ctx.fillStyle = `rgb(50,50,50)`; // set color
-    this.ctx.fillRect(this.ctxWindow.width - this.scaleWidth, 0, this.ctxWindow.width, this.ctxWindow.height);
+    this.ctx.fillRect(this.ctxWindow.width - this.scaleWidth, 0, this.ctxWindow.width, this.ctxWindow.height + 100);
     if (this.scaleMode === 'linear') {
       for (var i = 0; i < (this.specMax/100); i++) {
         this.ctx.fillStyle = `rgb(250,250,250)`; // set color
