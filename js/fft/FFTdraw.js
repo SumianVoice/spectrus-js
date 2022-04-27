@@ -220,7 +220,7 @@ class _fftSpectrogramDisplay {
   // }
   // draw the entire fft spectrogram
   clear() {
-    this.ctx.clearRect(0,0,this.ctxWindow.width,this.ctxWindow.height);
+    this.ctx.clearRect(0,0,this.ctxWindow.width,this.ctxWindow.height + 100);
   }
   render() {
     if (this.paused) {return false}

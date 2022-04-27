@@ -16,6 +16,7 @@ class _fftAnalyser {
     this.data = data;
     this.lastFundamentalIndex = 0;
   }
+
   // try to find the fundamental index
   getFundamental(array) {
     // get highest peak
@@ -38,10 +39,22 @@ class _fftAnalyser {
         }
       }
       else if (currentPeakIndex > 0) {
+        currentPeakIndex = this.getMoreAccurateFundamental(array, currentPeakIndex);
         return {"index" : currentPeakIndex, "amplitude" : currentPeakAmplitude};
       }
     }
     return {"index" : 0, "amplitude" : 0};
+  }
+  getMoreAccurateFundamental(array, start) {
+    let total = array[start];
+    let div = 1;
+    for (var i = Math.max(start - 2, 0); i < Math.min(start + 2, array.length-1); i++) {
+      if (i != start) {
+        total += (array[i]) * i;
+        div += (array[i]);
+      }
+    }
+    return (total / div);
   }
   getFundamentalOld(patternPeaks, patternAvg, data) {
     if (patternPeaks && patternAvg) {

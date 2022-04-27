@@ -83,9 +83,9 @@ class _spectrogram2d extends _fftSpectrogramDisplay{
     let tmpWidth = x - this.ctxWindow.x;
     let tmpHZ = Math.floor(this.hz(this.unscaleY(this.ctxWindow.height - tmpY)));
     tmpctx.fillStyle = '#000';
-    tmpctx.fillRect(0, tmpY-1, this.ctxWindow.width + 5 - this.scaleWidth, 3);
+    tmpctx.fillRect(0, tmpY, this.ctxWindow.width + 5 - this.scaleWidth, 3);
     tmpctx.fillStyle = '#ff3';
-    tmpctx.fillRect(0, tmpY-1, this.ctxWindow.width + 5 - this.scaleWidth, 1);
+    tmpctx.fillRect(0, tmpY, this.ctxWindow.width + 5 - this.scaleWidth, 1);
     tmpctx.font = "20px Arial";
     tmpctx.fillStyle = `rgba(26, 0, 32, 0.3)`;
     roundRect(x + 60 - 4, y - 8 - 22, 60, 28, 10, tmpctx);
@@ -126,17 +126,18 @@ class _spectrogram2d extends _fftSpectrogramDisplay{
     ctx.font = "20px Arial";
     const tmpX = 15;
     ctx.fillStyle = `rgba(50,50,50,0.4)`;
-    ctx.fillRect(this.ctxWindow.width - this.scaleWidth, this.ctxWindow.height - this.scaleFuncY(fundamentalIndex+0.5) - 20, tmpX + 80, 35);
+    ctx.fillRect(this.ctxWindow.width - this.scaleWidth, this.ctxWindow.height - this.scaleFuncY(fundamentalIndex)-1 - 20, tmpX + 80, 35);
     ctx.fillStyle = `rgba(0,0,0,0.7)`;
-    ctx.fillRect(this.ctxWindow.width - 8 -  this.scaleWidth - 2, this.ctxWindow.height - this.scaleFuncY(fundamentalIndex+0.5) - 2, tmpX + 20 + 2, width + 4);
+    ctx.fillRect(this.ctxWindow.width - 8 -  this.scaleWidth - 2, this.ctxWindow.height - this.scaleFuncY(fundamentalIndex)-1 - 2, tmpX + 20 + 2, width + 4);
     ctx.fillStyle = color; // set color
-    ctx.fillRect(this.ctxWindow.width - 8 -  this.scaleWidth, this.ctxWindow.height - this.scaleFuncY(fundamentalIndex+0.5), tmpX + 20, width);
-    ctx.fillText(`${Math.floor(this.hz(fundamentalIndex))}`, this.ctxWindow.width - this.scaleWidth + 30, this.ctxWindow.height - this.scaleFuncY(fundamentalIndex+0.5) + 5);
+    ctx.fillRect(this.ctxWindow.width - 8 -  this.scaleWidth, this.ctxWindow.height - this.scaleFuncY(fundamentalIndex)-1, tmpX + 20, width);
+    ctx.fillText(`${Math.floor(this.hz(fundamentalIndex))}`, this.ctxWindow.width - this.scaleWidth + 30, this.ctxWindow.height - this.scaleFuncY(fundamentalIndex)-1 + 5);
   }
   scaleRender() {
     if (!this.enable) {return}
     this.ctx.fillStyle = `rgb(50,50,50)`; // set color
     this.ctx.fillRect(this.ctxWindow.width - this.scaleWidth, 0, this.ctxWindow.width, this.ctxWindow.height + 100);
+    this.ctx.fillRect(0, this.ctxWindow.height, this.ctxWindow.width, this.ctxWindow.height + 100);
     if (this.scaleMode === 'linear') {
       for (var i = 0; i < (this.specMax/100); i++) {
         this.ctx.fillStyle = `rgb(250,250,250)`; // set color
@@ -154,6 +155,16 @@ class _spectrogram2d extends _fftSpectrogramDisplay{
     }
     else if (this.scaleMode === 'log') {
       let tmpScale = 1.01;
+      for (var i = 0; i < 9; i++) {
+        // A0-A9 note
+        let tmpHZ = getNoteHz("C"+i);
+        this.ctx.fillStyle = `#aa99ff33`; // set color
+        this.ctx.fillRect(this.ctxWindow.width - this.scaleWidth, this.ctxWindow.height - this.scaleFuncY(this.ahz(tmpHZ)), 57, 1);
+        this.ctx.fillStyle = `#a9f`; // set color
+        this.ctx.fillRect(this.ctxWindow.width - this.scaleWidth, this.ctxWindow.height - this.scaleFuncY(this.ahz(tmpHZ)), 5, 1);
+        this.ctx.fillStyle = `#a9f`; // set color
+        this.ctx.fillText(`${"C"+i}`, this.ctxWindow.width - this.scaleWidth + 60, this.ctxWindow.height - this.scaleFuncY(this.ahz(tmpHZ)));
+      }
       for (var i = 0; i < (this.specMax/10); i++) {
         this.ctx.fillStyle = `rgba(100,100,200,1)`; // set color
         // this.ctx.fillStyle = `rgb(250,250,250)`; // set color
@@ -167,17 +178,17 @@ class _spectrogram2d extends _fftSpectrogramDisplay{
           // this.ctx.fillStyle = `rgb(100,100,100)`; // set color
           this.ctx.fillText(`${10*i}`, this.ctxWindow.width - this.scaleWidth*0.3, this.ctxWindow.height - this.scaleFuncY(this.ahz(i * 10)) - 3);
         }
-        else if (i%50 === 0 && i >= 200) {
-          this.ctx.fillRect(this.ctxWindow.width - this.scaleWidth, this.ctxWindow.height - this.scaleFuncY(this.ahz(i * 10)), 20*3, 1);
-        }
+        // else if (i%50 === 0 && i >= 200) {
+        //   this.ctx.fillRect(this.ctxWindow.width - this.scaleWidth, this.ctxWindow.height - this.scaleFuncY(this.ahz(i * 10)), 20*3, 1);
+        // }
         else if (i%10 === 0 && i <= 200) {
           if (i <= 60) {
             this.ctx.fillText(`${10*i}`, this.ctxWindow.width - this.scaleWidth*0.3, this.ctxWindow.height - this.scaleFuncY(this.ahz(i * 10)) - 3);
             this.ctx.fillRect(this.ctxWindow.width - this.scaleWidth, this.ctxWindow.height - this.scaleFuncY(this.ahz(i * 10)), 30*3, 1);
           }
-          else {
-            this.ctx.fillRect(this.ctxWindow.width - this.scaleWidth, this.ctxWindow.height - this.scaleFuncY(this.ahz(i * 10)), 10*3, 1);
-          }
+          // else {
+          //   this.ctx.fillRect(this.ctxWindow.width - this.scaleWidth, this.ctxWindow.height - this.scaleFuncY(this.ahz(i * 10)), 10*3, 1);
+          // }
         }
         else if (i < 10){
           this.ctx.fillRect(this.ctxWindow.width - this.scaleWidth, this.ctxWindow.height - this.scaleFuncY(this.ahz(i * 10)), 7*3, 1);

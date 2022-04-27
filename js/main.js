@@ -124,7 +124,7 @@ function spectrum(stream) {
     ctxUI.clearRect(0,0,canvasUI.width,canvasUI.height);
 
     // ============================== FFT stuff ==============================
-    if (!fftDraw.paused) {
+    if (!fftDraw.paused || !fftDraw.enabled) {
       fftDraw.clear();
     }
 
@@ -213,19 +213,39 @@ function spectrum(stream) {
     //
     if (fundamental && !spectrogram.paused) {
       if (fundamental.amplitude > 150) {
-        pitchAvg = ((pitchAvg * 1) + Math.max(fundamental.index,1))/2;
+        pitchAvg = Math.max(fundamental.index,1);
         pitchAlertTest(fftDraw.hz(pitchAvg));
         fftDraw.drawCursorAt((pitchAvg), 200, "#2f2", 2);
         spectrogram.drawCursorAt((pitchAvg), 200, "#2f2", 2, fftDraw.ctx);
-        ctx.fillStyle = '#ff3';
-        ctx.font = "20px Arial";
-        ctx.fillText(lookupNote(fftDraw.hz(pitchAvg)), 300,35)
-        ctx.fillText(`~${Math.round(fftDraw.hz(pitchAvg))}Hz`, 350,35)
-        if (tracking === "all") {
-          spectrogram.plot(pitchAvg, `RGBA(20,250,10,0.7)`);
+        let noteName = lookupNote(fftDraw.hz(pitchAvg));
+        let noteHZ = Math.round(getNoteHz(noteName));
+        let curHz = Math.round(fftDraw.hz(pitchAvg));
+        let difference = curHz - noteHZ;
+        // offset the text so it's easier to read
+        for (var i = 0; i < 5-noteName.length; i++) {
+          noteName = " " + noteName;
+        }
+        // set up the font
+        ctx.font = "20px Mono";
+        ctx.fillStyle = '#33ff5577';
+        ctx.fillText(` ${curHz}Hz`, 300,35);
+        ctx.fillStyle = '#ffff3377';
+        ctx.fillText(`${noteName}`, 300,55);
+        ctx.fillStyle = '#ffffff77';
+        if (difference > -1) { // offset the text so it's easier to read
+          difference = "+" + difference;
+        }
+        ctx.fillText(`${difference}`, 350,55);
+        ctx.fillStyle = '#ffffff33';
+        ctx.fillText(`(${noteHZ}Hz)`, 300,78);
+        // ctx.fillText(lookupNote(fftDraw.hz(pitchAvg)), 300,35);
+
+        // if tracking is on, render a line on the spec
+        if (formantTrackingVisibility) {
+          spectrogram.plot(pitchAvg, '#fff');
         }
       }
-      else {
+      else { // if it's not loud enough
         fftDraw.drawCursorAt(fundamental.index, fundamental.amplitude, "#ff0", 1);
         spectrogram.drawCursorAt((pitchAvg), 200, "#ff2", 2, fftDraw.ctx);
       }
