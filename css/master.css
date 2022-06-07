@@ -9,3 +9,10 @@ body {
   margin: 0;
   overflow: hidden;
 }
+
+#filePicker {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+}
