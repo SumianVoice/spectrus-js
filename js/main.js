@@ -129,7 +129,7 @@ function spectrum(stream) {
     }
 
     // ============================== controls ==============================
-    if ((m.x < 300 && m.y < 200)) {
+    if ((m.x < 300 && m.y < 240)) {
       showControls = true;
       alertPitchInput.style.visibility = "visible";
     }

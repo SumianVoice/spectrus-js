@@ -1,5 +1,6 @@
 
 
+let _audio = null;
 
 let mClick = {
   x : 0,
@@ -38,6 +39,9 @@ class _buttonControl {
   if (child) {return child.spectrogramPauseToggle()}
   this.spectrogram.setPause(this.spectrogram.paused ? false : true);
   this.fft.setPause(this.fft.paused ? false : true);
+  if (_audio) {
+    this.spectrogram.paused ? _audio.pause() : _audio.play();
+  }
   if (this.spectrogram.paused) {buttonList.buttons[5].setText(`‖`);}
   else {buttonList.buttons[5].setText(`▶`);}
 
@@ -84,6 +88,43 @@ class _buttonControl {
     for (var i = 0; i < smoothPeaks.length; i++) {
       rolloffSave.push({ ...smoothPeaks[i] });
     }
+  }
+  changeUserDevice(child=false) {
+    if (child) {return child.changeUserDevice()}
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(a => {
+      console.log('changing to ' + a.toString());
+      fft.changeStream(a);
+    }).catch(console.error);
+  }
+  playSoundFile(child=false) {
+    if (child) {return child.playSoundFile()}
+    let fs = document.querySelector("#filePicker").files;
+    if (fs.length < 1) {
+      alert("Please pick a file first!");
+      return;
+    }
+    let f = fs[0];
+    let u = URL.createObjectURL(f);
+    let a = new Audio(u);
+    let o;
+
+    _audio = a;
+
+    a.addEventListener('ended', ev => {
+      _audio = null;
+      URL.revokeObjectURL(u);
+      this.changeUserDevice();
+    });
+
+    let c = new AudioContext();
+    let source = c.createMediaElementSource(a);
+    source.connect(c.destination);
+
+    o = fft.swapContext(c);
+
+    source.connect(fft.analyser);
+
+    a.play();
   }
 }
 
@@ -166,7 +207,22 @@ function buttonsInit() {
   tmpButton.setPos(20,140);
   tmpButton.setText(`save rolloff`);
   buttonList.add(tmpButton);
-
+  // changeUserDevice
+  tmpButton = new _button();
+  tmpButton.childBind(buttonControl);
+  tmpButton.setFunction(buttonControl.changeUserDevice)
+  tmpButton.setSize(140, 20);
+  tmpButton.setPos(20,170);
+  tmpButton.setText(`select user device`);
+  buttonList.add(tmpButton);
+  // playSoundFile
+  tmpButton = new _button();
+  tmpButton.childBind(buttonControl);
+  tmpButton.setFunction(buttonControl.playSoundFile)
+  tmpButton.setSize(140, 20);
+  tmpButton.setPos(20,200);
+  tmpButton.setText(`play sound`);
+  buttonList.add(tmpButton);
   //
   // tmpButton = new _button();
   // tmpButton.childBind(buttonControl);
